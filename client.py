@@ -24,6 +24,7 @@ def printres(res):
             print('answer :'+h['answer'])
         else:
             print('answer :' + "")
+        print('date created :' + h['date'])
         print("<================================>")
         z=z+1
 
@@ -70,6 +71,7 @@ while True:
                 clear()
                 print("Username an Password IS CORRECT\nLogging You in ...")
                 token = r['token']
+
                 time.sleep(2)
             else:
                 clear()
@@ -86,6 +88,7 @@ while True:
                     subj=input("what is your subject: ")
                     txt= input("what is your txt: ")
                     data = requests.post(__api__(),data={'token':token,'text':txt,'subject':subj}).json()
+                    print(data['message'] + '\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '2':
                     clear()
@@ -95,27 +98,26 @@ while True:
                     if data['code']=='200':
                         printres(data)
                     else:
-                        print(data['message']+'\n')
+                        print(data["message"]+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '3':
                     clear()
                     idn=input("ticket id : ")
                     CMD = "closeticket"
                     data = requests.post(__api__(),data={'token':token,'commentId':idn}).json()
-                    if data['code']=='200':
-                        print("ok")
-                    else:
-                        print(data['message']+'\n')
+
+                    print(data['message']+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '4':
                     clear()
                     CMD = "getticketmod"
                     status = input("what kind of status do you need?? open,closed,waiting: ")
                     data = requests.get(__api__(), params={'token': token, 'status': status}).json()
+
                     if data['code'] == '200':
                         printres(data)
                     else:
-                        print(data['message']+'\n')
+                        print(data["message"] + '\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '5':
                     clear()
@@ -123,10 +125,8 @@ while True:
                     ans = input("what is your answer? ")
                     idn = input("ticket id :")
                     data = requests.post(__api__(),data={'token':token,'commentId':idn,'text':ans}).json()
-                    if data['code'] == '200':
-                        print("ok\n")
-                    else:
-                        print(data['message']+'\n')
+
+                    print(data['message']+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '6':
                     clear()
@@ -135,33 +135,27 @@ while True:
                     idn = input("ticket id :")
                     data = requests.post(__api__(),
                                                   data={'token': token, 'commentId': idn, 'status': status}).json()
-                    if data['code'] == '200':
-                        print("ok\n")
-                    else:
-                        print(data['message']+'\n')
+
+                    print(data['message']+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '7':
                     clear()
-                    CMD = "changestatus"
+                    CMD = "changeaccess"
                     username = input("what username do you need to change access :")
                     rootpass = input("what is root password? ")
                     admin = input("0 for normal & 1 for admin :")
                     data = requests.post(__api__(),
                                                   data={'username': username, 'rootPass': rootpass, 'admin': admin}).json()
-                    if data['code'] == '200':
-                        print("ok\n")
-                    else:
-                        print(data['message']+'\n')
+
+                    print(data['message']+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type == '8':
                     clear()
+                    CMD = "logout"
+                    data = requests.post(__api__(),data={'token': token}).json()
 
-                    data = requests.post(__api__(),
-                                                  data={'token': token}).json()
-                    if data['code'] == '200':
-                        print("ok\n")
-                    else:
-                        print(data['message']+'\n')
+
+                    print(data['message']+'\n')
                     input("Press Any Key To Continue ...")
                 if func_type== '9':
                     sys.exit()

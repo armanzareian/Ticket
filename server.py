@@ -8,7 +8,7 @@ import os
 from binascii import hexlify
 import tornado.web
 from tornado.options import define, options
-
+from datetime import datetime
 
 
 
@@ -159,9 +159,11 @@ class sendticket(BaseHandler):
         text = self.get_argument('text')
         subject = self.get_argument('subject')
         user=self.getUserName(token)
+        nowtime = datetime.now()
+        formatted_date = nowtime.strftime('%Y-%m-%d %H:%M:%S')
         if user:
             cs = self.db.cursor()
-            cs.execute("INSERT INTO comments (username, ask, status, subject) VALUES (%s, %s ,%s ,%s)", (user[0], text, 'open', subject))
+            cs.execute("INSERT INTO comments (username, ask, status, subject, date) VALUES (%s, %s ,%s ,%s, %s)", (user[0], text, 'open', subject,formatted_date))
             self.db.commit()
             output={
                 'message':'Ticket Sent Successfully',
@@ -237,11 +239,13 @@ class closeticket(BaseHandler):
         commentId = self.get_argument('commentId')
         user = self.getUserName(token)
         if user:
+            a=False
             cs = self.db.cursor()
             cs.execute("SELECT * FROM comments WHERE username = '{}'".format(user[0]))
             resuser = cs.fetchall()
             for index in resuser:
                 if index[0] is int(commentId):
+                    a=True
                     cs = self.db.cursor()
                     cs.execute("UPDATE comments SET status = %s WHERE id = %s ", ('closed', int(commentId)))
                     self.db.commit()
@@ -251,7 +255,12 @@ class closeticket(BaseHandler):
                     }
                     self.write(output)
 
-
+            if a is False:
+                output = {
+                    'message': 'Wrong Id',
+                    'code': '400'
+                }
+                self.write(output)
 
         else:
             output = {
@@ -285,6 +294,7 @@ class getticketcli(BaseHandler):
                         out["status"] = index[2]
                         out["ask"] = index[3]
                         out["answer"] = index[4]
+                        out["date"] = index[6]
 
                         output['block {}'.format(z)] = out
                         z = z + 1
@@ -337,7 +347,8 @@ class getticketmod(BaseHandler):
                         out["status"]=index[2]
                         out["ask"]=index[3]
                         out["answer"]=index[4]
-
+                        out["date"] = str(index[6])
+                        print(type(index[6]))
                         output['block {}'.format(z)] = out
                         z = z + 1
 
